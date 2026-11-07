@@ -12,7 +12,8 @@ Defaults to the last 30 days (local time). The AiVerdict video used
 Per-project totals are printed only with --projects, because project folder names can be
 private (keep it off when sharing your screen).
 
-Prices: USD per million tokens, Anthropic API list prices (model table dated 2026-10-06).
+Prices: USD per million tokens, Anthropic API list prices (checked 2026-11-07; Sonnet 5.5 cache
+reads were cut from $0.20 to $0.10 on 2026-10-08).
 Cache writes: 1.25x input for the 5-minute TTL, 2x input for the 1-hour TTL; cache reads as
 listed per model (Anthropic prompt-caching docs). Update PRICES if prices change.
 """
@@ -24,7 +25,7 @@ ROOT = os.path.expanduser("~/.claude/projects")
 # model: (input, output, cache write 5m, cache write 1h, cache read)
 PRICES = {
     "claude-opus-5-5": (4.00, 20.00, 5.00, 8.00, 0.20),
-    "claude-sonnet-5-5": (2.00, 10.00, 2.50, 4.00, 0.20),
+    "claude-sonnet-5-5": (2.00, 10.00, 2.50, 4.00, 0.10),
     "claude-haiku-5-5": (0.10, 0.50, 0.125, 0.20, 0.01),
     "claude-fable-5-1": (10.00, 50.00, 12.50, 20.00, 0.25),
 }

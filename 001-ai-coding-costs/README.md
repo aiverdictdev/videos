@@ -16,8 +16,9 @@ python3 split_usage.py --since 2026-10-01 --until 2026-11-06
 
 Output: cost per day (main / sub), totals, active days, and token counts with the cache-read share.
 
-The video used the second command. My result: `TOTAL main $1409.82  sub $1704.09  all $3113.91`, 24 active
-days, which is about $2,500 a month. [ccusage](https://github.com/ccusage/ccusage) landed within 0.3% of it.
+The video used the second command. My result: `TOTAL main $1409.83  sub $1636.07  all $3045.89`, 24 active
+days, which is about $2,500 a month. [ccusage](https://github.com/ccusage/ccusage) shows $3,122 for the same days
+because it still prices Sonnet 5.5 cache reads at $0.20; Anthropic cut them to $0.10 on 2026-10-08.
 
 ## How it counts
 
