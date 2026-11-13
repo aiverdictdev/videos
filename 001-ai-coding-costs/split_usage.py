@@ -37,6 +37,7 @@ def main():
     ap.add_argument("--since", default=(today - timedelta(days=29)).isoformat(), help="first day included")
     ap.add_argument("--until", default=today.isoformat(), help="last day included")
     ap.add_argument("--projects", action="store_true", help="also print per-project totals")
+    ap.add_argument("--bytype", action="store_true", help="also split tokens and cost by token type and model (video 006)")
     args = ap.parse_args()
 
     # One API response is logged as several lines (one per content block); keep the line
@@ -79,12 +80,15 @@ def main():
                 inp, out = u.get("input_tokens", 0), u.get("output_tokens", 0)
                 cr = u.get("cache_read_input_tokens", 0)
                 cost = (inp * p[0] + out * p[1] + w5 * p[2] + w1 * p[3] + cr * p[4]) / 1e6
+                # Cost of each token type on its own (video 006 reads the bill line by line).
+                parts = dict(input=inp * p[0] / 1e6, output=out * p[1] / 1e6,
+                             cache_write=(w5 * p[2] + w1 * p[3]) / 1e6, cache_read=cr * p[4] / 1e6)
                 kind = "sub" if (is_sub_file or o.get("isSidechain")) else "main"
                 key = (m.get("id"), o.get("requestId"))
                 prev = best.get(key)
                 if prev is None or out > prev["out"]:
                     best[key] = dict(out=out, day=d, kind=kind, project=project, cost=cost,
-                                     inp=inp, cw=w5 + w1, cr=cr)
+                                     inp=inp, cw=w5 + w1, cr=cr, model=model, parts=parts)
 
     day = collections.defaultdict(collections.Counter)
     proj = collections.defaultdict(collections.Counter)
@@ -107,6 +111,31 @@ def main():
         allt = t["input"] + t["output"] + t["cache_write"] + t["cache_read"]
         print(kind, {k: f"{v:,}" for k, v in t.items()},
               f"cache-read share {t['cache_read'] / max(allt, 1) * 100:.1f}%")
+    if args.bytype:
+        # Tokens and cost per token type, overall and per model, plus what cache reads would have cost
+        # at the full input price (the saving prompt caching makes).
+        types = ("input", "output", "cache_write", "cache_read")
+        bym = collections.defaultdict(lambda: (collections.Counter(), collections.Counter()))
+        allt, allc = collections.Counter(), collections.Counter()
+        for r in best.values():
+            t, c = bym[r["model"]]
+            for k, field in zip(types, ("inp", "out", "cw", "cr")):
+                t[k] += r[field]; allt[k] += r[field]
+                c[k] += r["parts"][k]; allc[k] += r["parts"][k]
+        def show(label, t, c):
+            tt, tc = sum(t[k] for k in types), sum(c[k] for k in types)
+            print(f"  {label}: {tt:,} tokens, ${tc:,.2f}")
+            for k in types:
+                print(f"    {k:12s} {t[k]:>15,}  {t[k]/max(tt,1)*100:6.2f}% of tokens   "
+                      f"${c[k]:10,.2f}  {c[k]/max(tc,1)*100:6.2f}% of cost")
+        print("by token type (all models):")
+        show("all", allt, allc)
+        for model in sorted(bym, key=lambda m: -sum(bym[m][1].values())):
+            t, c = bym[model]
+            show(model, t, c)
+            full = t["cache_read"] * PRICES[model][0] / 1e6
+            print(f"    cache reads at full input price: ${full:,.2f} instead of ${c['cache_read']:,.2f} "
+                  f"(saved ${full - c['cache_read']:,.2f})")
     if args.projects:
         print("per project (top):")
         for pth, c in sorted(proj.items(), key=lambda x: -(x[1]["main"] + x[1]["sub"]))[:6]:

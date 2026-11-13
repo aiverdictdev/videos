@@ -12,9 +12,12 @@ prices and splits it into **your own sessions** vs **subagents**.
 ```bash
 python3 split_usage.py                      # last 30 days
 python3 split_usage.py --since 2026-10-01 --until 2026-11-06
+python3 split_usage.py --bytype              # + split by token type and model (added for video 006)
 ```
 
-Output: cost per day (main / sub), totals, active days, and token counts with the cache-read share.
+Output: cost per day (main / sub), totals, active days, and token counts with the cache-read share. With
+`--bytype` it also splits tokens and cost into fresh input, output, cache writes and cache reads, overall and per
+model, and shows what your cache reads would have cost at the full input price (what prompt caching saved you).
 
 The video used the second command. My result: `TOTAL main $1409.83  sub $1636.07  all $3045.89`, 24 active
 days, which is about $2,500 a month. [ccusage](https://github.com/ccusage/ccusage) shows $3,122 for the same days
