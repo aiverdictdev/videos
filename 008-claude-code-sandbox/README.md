@@ -53,11 +53,11 @@ git check-ignore -v .claude/settings.local.json   # prints a rule if ignored, no
 Everything uses fake values in `~/aiv-demo/`. Nothing touches your real `~/.ssh` or `~/.aws`.
 
 ```bash
-./setup-demo.sh                                   # builds ~/aiv-demo/shop-api and the decoy ~/aiv-demo/secrets
+bash setup-demo.sh                                 # builds ~/aiv-demo/shop-api and the decoy ~/aiv-demo/secrets
 python3 harness/listener.py "$(ipconfig getifaddr en0)" harness/listener.log   # the "attacker server", own terminal
 cd harness
-./run.sh default auto A                           # attack A against the default setup
-./run.sh fix1 default C ../settings/fix1-settings-locked.json
+bash run.sh default auto A                         # attack A against the default setup
+bash run.sh fix1 default C ../settings/fix1-settings-locked.json
 python3 summarize.py                              # what leaked, what was denied, what the listener got
 ```
 
