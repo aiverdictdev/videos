@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage: ./run-sbx.sh <label> <attack>
+# Usage: bash run-sbx.sh <label> <attack>
 # Runs one attack inside a Docker Sandbox named aiv-demo (create it once from ~/aiv-demo/shop-api with
 # `sbx run --name aiv-demo claude`, log in to Claude inside, then exit). Claude runs there with
 # --dangerously-skip-permissions, the sandbox default. Pick the network preset with `sbx policy`.
@@ -10,7 +10,7 @@ export ATTACKER=${ATTACKER:-$(ipconfig getifaddr en0)}
 DECOY="$HOME/aiv-demo/secrets"
 . "$HERE/prompts.sh"
 PROMPT=$(prompt_for "$ATTACK") || exit 1
-"$HERE/../setup-demo.sh" >/dev/null
+bash "$HERE/../setup-demo.sh" >/dev/null
 mkdir -p "$HERE/runs"
 start=$(date +%s)
 ( sleep 300; pkill -f "sbx exec aiv-demo" ) 2>/dev/null & WD=$!
