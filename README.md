@@ -7,3 +7,4 @@ the numbers or run the same tests on your own setup.
 |---|---|
 | My Claude Code Usage Is Worth $2,500 a Month at API Prices. I Pay $100. | [`001-ai-coding-costs`](001-ai-coding-costs) |
 | Why Your Claude Code Limit Dies So Fast | [`006-claude-code-limit`](006-claude-code-limit) |
+| Claude Code Can Read Your Passwords. Here's the Fix. | [`008-claude-code-sandbox`](008-claude-code-sandbox) |
